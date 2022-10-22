@@ -29,7 +29,7 @@ class CvReader:
             if ret is False:
                 break
             cur_frame += 1
-            self._callback_(self, current_img, cur_frame, self._fps_, self._total_frame_, self._height_, self._width_)
+            self._callback_(self, current_img, cur_frame, self._fps_, self._total_frame_, self._height_, self._width_, self._filename_)
         return True
 
     def info(self):
