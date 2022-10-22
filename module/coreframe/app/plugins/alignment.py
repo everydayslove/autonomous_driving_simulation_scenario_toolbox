@@ -23,8 +23,7 @@ class Alignment(BasePlugin, ABC):
     def init(self):
         PROJECT_ROOT = path.dirname(path.dirname(path.dirname(path.dirname((path.dirname(__file__))))))
         alignment_dll_path = path.join(PROJECT_ROOT, "tools", "alignment", "dll", "bin", "ShakeImage.dll")
-
-        alignment_dll_path = r'D:\project\autonomous_driving_simulation_scenario_toolbox\tools\alignment\dll\bin\ShakeImage.dll'
+        
         self._alignment_dll_ = ctypes.windll.LoadLibrary(alignment_dll_path)
 
         self._alignment_dll_ .get_mat_and_return_uchar.argtypes = (POINTER(c_ubyte), c_int, c_int, c_int)

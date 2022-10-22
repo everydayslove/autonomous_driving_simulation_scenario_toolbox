@@ -130,3 +130,6 @@ dmypy.json
 
 # configuration
 module/coreframe/data/conf/sim.conf
+
+# pycharm configuration
+.idea/
