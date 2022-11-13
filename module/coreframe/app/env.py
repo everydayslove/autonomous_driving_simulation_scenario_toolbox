@@ -17,4 +17,4 @@ __all__ = ['PATH_APP_ROOT']
 
 
 PATH_APP_ROOT = os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), ''))
-
+PATH_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(PATH_APP_ROOT)))
