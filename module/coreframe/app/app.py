@@ -18,6 +18,7 @@ class SimApp:
         self._plugins_path_ = ''
         self._plugins_manager_ = None
         self._cv_Reader_ = None
+        self._timeline_ = []
 
     def init(self, path_app_root):
         # config类

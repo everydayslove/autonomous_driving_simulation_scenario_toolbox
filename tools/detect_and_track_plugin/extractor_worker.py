@@ -1,29 +1,27 @@
+import sys
+sys.path.append(r'D:\project\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\deep_sort_pytorch')
+sys.path.append(r'D:\project\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin')
+
+from yolov5_obb.utils.torch_utils import select_device, time_synchronized
+from deep_sort_pytorch.utils.parser import get_config
+from deep_sort_pytorch.deep_sort import DeepSort
+from detect_utils import rbox_to_poly, xyxy_to_xywh
+from app.app import sim_app
+import torch
+import numpy as np
+
+
 class ExtractorWorker:
     def __init__(self, opt):
         self.opt = opt
         # initialize deepsort
         cfg = get_config()
-        cfg.merge_from_file(opt.config_deepsort)
-        self.deepsort = DeepSort(opt.device, cfg.DEEPSORT.REID_CKPT,
+        cfg.merge_from_file(opt['config_deepsort'])
+        self.deepsort = DeepSort(opt['device'], opt['deep_sort_weights'],
                             max_dist=cfg.DEEPSORT.MAX_DIST, min_confidence=cfg.DEEPSORT.MIN_CONFIDENCE,
                             nms_max_overlap=cfg.DEEPSORT.NMS_MAX_OVERLAP, max_iou_distance=cfg.DEEPSORT.MAX_IOU_DISTANCE,
                             max_age=cfg.DEEPSORT.MAX_AGE, n_init=cfg.DEEPSORT.N_INIT, nn_budget=cfg.DEEPSORT.NN_BUDGET,
                             use_extractor=True)
-        self.t_a = None
-        self.t_b = None
-
-
-    def run(self):
-        #cudnn.benchmark = True  # set True to speed up constant image size inference
-
-        while True:
-            frame_id, timestamp, det, img = detection_queue.get()
-            if img is None:
-                break
-
-            frame_id, timestamp, bbox_xywh, features, confss, attrs, img = self.get_features(frame_id, timestamp,det, img)
-            feature_queue.put((frame_id, timestamp, bbox_xywh, features, confss, attrs, img))
-            feature_queue.put((None, None, None, None, None, None, None))
 
     def get_features(self, frame_id, timestamp, det, img):
         t5 = time_synchronized()
@@ -57,19 +55,11 @@ class ExtractorWorker:
             # 翻转list的排列结果,改为类别由小到大的排列
             confss = det[:, 5]
 
-            t55 = time_synchronized()
-
             bbox_xywh, features, t56, t57, t58 = self.deepsort.get_features(aabb_xywh, img)
 
         t6 = time_synchronized()
         print('      [%4d] [Features]   %.3f s' % (frame_id, t6 - t5))
 
-        global timeline
-        # timeline.append(dict(frame=frame_id, begin=t5, end=t55, type="extract_A"))
-        # timeline.append(dict(frame=frame_id, begin=t55, end=t56, type="extract_B"))
-        # timeline.append(dict(frame=frame_id, begin=t56, end=t57, type="extract_C"))
-        # timeline.append(dict(frame=frame_id, begin=t57, end=t58, type="extract_D"))
-        # timeline.append(dict(frame=frame_id, begin=t58, end=t6, type="extract_E"))
-        timeline.append(dict(frame=frame_id, begin=t5, end=t6, type="extract"))
+        sim_app()._timeline_.append(dict(frame=frame_id, begin=t5, end=t6, type="extract"))
 
-        return frame_id, timestamp, bbox_xywh, features, confss, attrs, img
+        return bbox_xywh, features, confss, attrs

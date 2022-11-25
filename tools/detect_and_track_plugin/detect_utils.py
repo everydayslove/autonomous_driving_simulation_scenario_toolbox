@@ -1,7 +1,10 @@
 import plotly.express as px
 import pandas as pd
 import queue
-
+import torch
+import numpy as np
+import math
+import cv2
 
 palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
 resized_range = 0.5
@@ -184,6 +187,30 @@ def write_timeline(tt0):
     #fig.show()
     fig.write_html("timeline.html")
 
+def show(timestamp, outputs, attrs, img):
+    time_str = "Time: %.4f s" % timestamp
+
+    pt = (0, 0)
+    color = (255, 0, 0)
+    t_size = cv2.getTextSize(time_str, cv2.FONT_HERSHEY_PLAIN, 4, 2)[0]
+    cv2.rectangle(img, pt, (pt[0] + t_size[0] + 16, pt[1] + t_size[1] + 16), color, -1)
+    cv2.putText(img, time_str, (pt[0] + 8, pt[1] + t_size[1] + 8), cv2.FONT_HERSHEY_PLAIN, 4, [255, 255, 255], 2)
+
+    if len(outputs) > 0:
+        for rbox, attr in zip(outputs, attrs):
+            poly = np.int0(rbox_to_poly(rbox))
+            arrow = rbox_to_heading_arrow(rbox)
+
+            id = rbox[5]
+            cc = (0, 255, 0)
+
+            # plot_one_rotated_box(id, poly, img, color=cc, line_thickness=2)
+            # plot_one_rotated_box(id, arrow, img, color=cc, line_thickness=-1)
+            plot_one_rotated_box(id, poly, img, label=str(id), color=cc, line_thickness=2)
+
+    # cv2.namedWindow("result", cv2.WINDOW_NORMAL)
+    resized = cv2.resize(img, (int(img.shape[1] * resized_range), int(img.shape[0] * resized_range)))
+    return resized
 
 def simple_read_from_video(cap):
     ret_val, img = cap.read()

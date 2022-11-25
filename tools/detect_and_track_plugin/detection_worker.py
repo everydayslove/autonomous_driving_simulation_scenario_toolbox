@@ -7,19 +7,20 @@ from yolov5_obb.utils.datasets import LoadImages, LoadStreams
 from yolov5_obb.utils.general import check_img_size, scale_labels, xyxy2xywh, rotate_non_max_suppression
 from yolov5_obb.utils.torch_utils import select_device, time_synchronized
 from app.app import sim_app
+import torch
 
 class DetectionWorker:
     def __init__(self, args):
         app = sim_app()
         self.width = app._cv_Reader_._width_
-        self.device = '' # 'cuda device, i.e. 0 or 0,1,2,3 or cpu'
         self.detect_model_path = args['detect_model_path']
         self.conf_threshold = args['conf_threshold']
         self.iou_threshold = args['iou_threshold']
         self.classes = args['classes']
         self.agnostic_nms = args['agnostic_nms']
         self.augment = args['augment']
-        
+        self.device = args['device']
+
         # Load model
         # self.detect_model_path
         self.model = attempt_load(self.detect_model_path, map_location=self.device)  # load FP32 model
@@ -28,19 +29,12 @@ class DetectionWorker:
         self.names = self.model.module.names if hasattr(self.model, 'module') else self.model.names  # get class names
         self.model.half()  # to FP16
 
-        with torch.no_grad():
-            self.device = select_device(self.device)
-
         # Run inference
         if self.device.type != 'cpu':
             self.model(torch.zeros(1, 3, self.width, self.width).to(self.device).type_as(next(self.model.parameters())))  # run once
 
-        self.t_a = None
-        self.t_b = None
-
     def run(self):
         #cudnn.benchmark = True  # set True to speed up constant image size inference
-
         while True:
             frame_id, timestamp, padded_img, img = img_queue.get()
             if padded_img is None:
@@ -66,13 +60,13 @@ class DetectionWorker:
         #pred = torch.zeros((1, 514080, 194))
         #t2 = time_synchronized()
         # Apply NMS
-        pred = rotate_non_max_suppression(pred, self.conf_thres, self.iou_thres, classes=self.classes, agnostic=self.agnostic_nms, without_iouthres=False)
+        pred = rotate_non_max_suppression(pred, self.conf_threshold, self.iou_threshold, classes=self.classes, agnostic=self.agnostic_nms, without_iouthres=False)
         #t3 = time_synchronized()
 
         # Process detections
         det = pred[0] # (num_nms_boxes, [xylsθ,conf,classid]) θ∈[0,179]
         if det is None:
-            return frame_id, timestamp, None, ori_img
+            return None
         det = det.cpu()
 
         det[:, :5] = scale_labels(padded_img.shape[2:], det[:, :5], ori_img.shape).round()
@@ -80,12 +74,5 @@ class DetectionWorker:
         t4 = time_synchronized()
         print('      [%4d] [Inference]  %.3f s' % (frame_id, t4 - t0))
 
-        global timeline
-        timeline.append(dict(frame=frame_id, begin=t0, end=t4, type="detect"))
-
-        # self.t_a = self.t_b
-        # self.t_b = time_synchronized()
-        # if self.t_a is not None:
-        #     print('      [%4d] [Detect]     %.3f s' % (frame_id, self.t_b - self.t_a))
-        # print("=======================================================")
-        return frame_id, timestamp, det, ori_img
+        sim_app()._timeline_.append(dict(frame=frame_id, begin=t0, end=t4, type="detect"))
+        return det
