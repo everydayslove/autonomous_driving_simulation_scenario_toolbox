@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-plugins_step = {'anti_shake': 1, 'track_obb': 2}
+plugins_step = {'alignment': 1, 'detect_and_track': 2}
 
 
 class BasePlugin(object):

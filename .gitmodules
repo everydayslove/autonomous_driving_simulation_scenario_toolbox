@@ -1,0 +1,3 @@
+[submodule "tools/detect_and_track_plugin/yolov5_obb"]
+	path = tools/detect_and_track_plugin/yolov5_obb
+	url = ../yolov5_obb

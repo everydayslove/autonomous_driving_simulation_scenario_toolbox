@@ -226,6 +226,31 @@ class BaseAppConfig(dict):
             print(e.__str__())
             return def_value, False
 
+    def get_float(self, key, def_value=0.0):
+        x = key.split('::')
+        if 1 == len(x):
+            _sec = '_'
+            _key = x[0].replace('-', '_')
+        elif 2 == len(x):
+            _sec = x[0].replace('-', '_')
+            _key = x[1].replace('-', '_')
+        else:
+            return def_value, False
+
+        if _sec not in self['_kvs']:
+            return def_value, False
+        if _key not in self['_kvs'][_sec]:
+            return def_value, False
+
+        if self['_kvs'][_sec][_key] is None:
+            return def_value, False
+
+        try:
+            return float(self['_kvs'][_sec][_key]), True
+        except ValueError as e:
+            print(e.__str__())
+            return def_value, False
+
     def get_bool(self, key, def_value=False):
         x = key.split('::')
         if 1 == len(x):
@@ -275,6 +300,36 @@ class AppConfig(BaseAppConfig):
         _tmp_str = _sec.get('video_file_path', None)
         if _tmp_str is not None:
             self.set_kv('common::video_file_path', _tmp_str)
+
+        if 'detect' not in cfg_parser:
+            log.e('invalid config file, need `detect` section.\n')
+            return False
+
+        _sec = cfg_parser['detect']
+
+        _tmp_str = _sec.get('detect_model_path', None)
+        if _tmp_str is not None:
+            self.set_kv('detect::detect_model_path', _tmp_str)
+
+        _tmp_str = _sec.get('object_confidence_threshold', None)
+        if _tmp_str is not None:
+            self.set_kv('detect::object_confidence_threshold', _tmp_str)
+
+        _tmp_str = _sec.get('iou_threshold', None)
+        if _tmp_str is not None:
+            self.set_kv('detect::iou_threshold', _tmp_str)
+
+        _tmp_str = _sec.get('classes', None)
+        if _tmp_str is not None:
+            self.set_kv('detect::classes', _tmp_str)
+
+        _tmp_str = _sec.get('agnostic_nms', None)
+        if _tmp_str is not None:
+            self.set_kv('detect::agnostic_nms', _tmp_str)
+
+        _tmp_str = _sec.get('augment', None)
+        if _tmp_str is not None:
+            self.set_kv('detect::augment', _tmp_str)
         return True
 
 

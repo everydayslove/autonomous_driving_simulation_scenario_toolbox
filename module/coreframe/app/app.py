@@ -18,6 +18,7 @@ class SimApp:
         self._plugins_path_ = ''
         self._plugins_manager_ = None
         self._cv_Reader_ = None
+        self._timeline_ = []
 
     def init(self, path_app_root):
         # config类
@@ -45,7 +46,7 @@ class SimApp:
 
         return True
 
-    def do_frame(self, cv_reader, current_img, cur_frame, fps, total_frame, height, width):
+    def do_frame(self, cv_reader, current_img, cur_frame, fps, total_frame, height, width, file_name):
         log.i("current frame:{},total frame:{}\n".format(cur_frame,total_frame))
         data = dict()
         data['header'] = dict()
@@ -54,6 +55,7 @@ class SimApp:
         data['header']['total_frame'] = total_frame
         data['header']['height'] = height
         data['header']['width'] = width
+        data['header']['file_name'] = file_name
         data['image'] = current_img
 
         self._plugins_manager_.run_one(data)
