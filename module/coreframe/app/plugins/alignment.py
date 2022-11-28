@@ -5,6 +5,8 @@ from ctypes import *
 import numpy as np
 from abc import ABC
 from os import path
+import os
+import sys
 from app.base.base_plugin import BasePlugin
 # scores = {'alignment': 1, 'track_obb': 2}
 
@@ -22,10 +24,14 @@ class Alignment(BasePlugin, ABC):
 
     def init(self):
         PROJECT_ROOT = path.dirname(path.dirname(path.dirname(path.dirname((path.dirname(__file__))))))
-        alignment_dll_path = path.join(PROJECT_ROOT, "tools", "alignment", "dll", "bin", "ShakeImage.dll")
-        
-        self._alignment_dll_ = ctypes.windll.LoadLibrary(alignment_dll_path)
 
+        alignment_dll_path = path.join(PROJECT_ROOT, "tools", "alignment", "dll", "bin", "ShakeImage.dll")
+        cur_path = os.path.dirname(alignment_dll_path)
+        os.environ['path'] = cur_path
+        # os.chdir(r"F:\work\workSpace\minanqiang\imageregistration_new\image_registration\build\Debug")
+        # sys.path.append(r"F:\work\workSpace\minanqiang\imageregistration_new\image_registration\build\Debug")
+        self._alignment_dll_ = ctypes.windll.LoadLibrary(alignment_dll_path)
+        # self._alignment_dll_ = ctypes.windll.LoadLibrary("ShakeImage.dll")
         self._alignment_dll_ .get_mat_and_return_uchar.argtypes = (POINTER(c_ubyte), c_int, c_int, c_int)
         self._alignment_dll_ .get_mat_and_return_uchar.restype = POINTER(c_ubyte)
 
