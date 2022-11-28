@@ -27,7 +27,7 @@ class Alignment(BasePlugin, ABC):
 
         alignment_dll_path = path.join(PROJECT_ROOT, "tools", "alignment", "dll", "bin", "ShakeImage.dll")
         cur_path = os.path.dirname(alignment_dll_path)
-        os.environ['path'] = cur_path
+        os.environ['path'] += ";" + cur_path
         # os.chdir(r"F:\work\workSpace\minanqiang\imageregistration_new\image_registration\build\Debug")
         # sys.path.append(r"F:\work\workSpace\minanqiang\imageregistration_new\image_registration\build\Debug")
         self._alignment_dll_ = ctypes.windll.LoadLibrary(alignment_dll_path)
