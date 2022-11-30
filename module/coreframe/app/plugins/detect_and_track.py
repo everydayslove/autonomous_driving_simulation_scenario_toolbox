@@ -27,11 +27,22 @@ import sys
 # sys.path.insert(0, './yolov5_obb')
 # from app.env import PATH_APP_ROOT
 # sys.path.append(os.path.join(os.path.dirname(os.path.dirname(PATH_APP_ROOT)), 'tools'))
-sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox')
+# sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox')
 # sys.path.append(r'D:\project\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track\yolov5_obb')
-sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin')
-sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\yolov5_obb')
-sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\deep_sort_pytorch')
+project_path_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..")
+tools_path = os.path.join(project_path_name, "tools")
+detect_path = os.path.join(tools_path, "detect_and_track_plugin")
+yolov5_path = os.path.join(detect_path, "yolov5_obb")
+deep_sort_pytorch_path = os.path.join(detect_path, "deep_sort_pytorch")
+sys.path.append(project_path_name)
+sys.path.append(tools_path)
+sys.path.append(detect_path)
+sys.path.append(yolov5_path)
+sys.path.append(deep_sort_pytorch_path)
+
+# sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin')
+# sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\yolov5_obb')
+# sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\deep_sort_pytorch')
 
 from yolov5_obb.utils.google_utils import attempt_download
 from yolov5_obb.models.experimental import attempt_load
@@ -52,13 +63,21 @@ from app.env import PATH_PROJECT_ROOT
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="True"
 
+
 def get_class_name():
     return DetectAndTrack
+
+
+deep_sort_file_name = "deep_sort.yaml"
+ckpt_file_name = "ckpt.t7"
 
 
 class DetectAndTrack(BasePlugin):
     def __init__(self, index):
         super(DetectAndTrack, self).__init__(index)
+        self.resize_detection_range = 0.5 # the resized range of output detection video
+        self.view_img = True
+        self.save_detection_video = True
         self.cur_frame = None
         self.current_img = None
         self.fps = None
@@ -68,11 +87,10 @@ class DetectAndTrack(BasePlugin):
         self.width = None
         self.channels = None
 
+    @property
     def init(self):
         # default parameters, can save into sim.conf file
-        self.view_img = True
-        self.save_detection_video = True
-        self.resize_detection_range = 0.5 # the resized range of output detection video
+        cur_path = os.path.dirname(os.path.abspath(__file__))
 
         app = sim_app()
         cfg = sim_cfg()
@@ -84,7 +102,7 @@ class DetectAndTrack(BasePlugin):
         self.video_file_name = eval(cfg.common.video_file_path)
         model_path = str(cfg.get_str('detect::detect_model_path')[0])
 
-        detect_args = {}
+        detect_args = dict()
         detect_args['detect_model_path'] =  eval(model_path)
         detect_args['conf_threshold'] = cfg.get_float('detect::object_confidence_threshold')[0]
         detect_args['iou_threshold'] = cfg.get_float('detect::iou_threshold')[0]
@@ -92,11 +110,16 @@ class DetectAndTrack(BasePlugin):
         detect_args['agnostic_nms'] = cfg.get_bool('detect::agnostic_nms', False)[0]
         detect_args['augment'] = cfg.get_bool('detect::augment', False)[0]
         detect_args['device'] = device
+
         self.detector = DetectionWorker(detect_args)
 
         track_extractor_args = {}
-        track_extractor_args['config_deepsort'] = r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\deep_sort_pytorch\configs\deep_sort.yaml'
-        track_extractor_args['deep_sort_weights'] = r'F:\work\workSpace\minanqiang\uav_detection\uav-scenario-translation\deep_sort_pytorch\deep_sort\deep\checkpoint\ckpt.t7'
+        deep_sort = os.path.join(cur_path, deep_sort_file_name)
+        track_extractor_args['config_deepsort'] = deep_sort
+
+        ckpt = os.path.join(cur_path, ckpt_file_name)
+        track_extractor_args['deep_sort_weights'] = ckpt
+
         track_extractor_args['device'] = device
         self.extractor = ExtractorWorker(track_extractor_args)
         self.tracker = TrackingWorker(track_extractor_args)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os,sys
 plugins_step = {'alignment': 1, 'detect_and_track': 2}
 
 
@@ -12,6 +12,8 @@ class BasePlugin(object):
         self.info['version'] = "1.0.0.1"
         self.info['name'] = '未知'
         self._index_ = index
+        self._base_project_path_name = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..")
+        sys.path.append(self._base_project_path_name)
 
     def init(self):
         raise NotImplementedError

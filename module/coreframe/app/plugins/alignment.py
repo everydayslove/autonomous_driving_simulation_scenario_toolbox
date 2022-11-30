@@ -10,6 +10,9 @@ import sys
 from app.base.base_plugin import BasePlugin
 # scores = {'alignment': 1, 'track_obb': 2}
 
+dll_name = "ShakeImage.dll"
+
+
 def get_class_name():
     return Alignment
 
@@ -25,14 +28,15 @@ class Alignment(BasePlugin, ABC):
     def init(self):
 
         cur_path = os.path.dirname(os.path.abspath(__file__))
-        dll_file_path = os.path.join(cur_path, "ShakeImage.dll")
-        self._alignment_dll_ = ctypes.windll.LoadLibrary(dll_file_path)
-        self._alignment_dll_ .get_mat_and_return_uchar.argtypes = (POINTER(c_ubyte), c_int, c_int, c_int)
-        self._alignment_dll_ .get_mat_and_return_uchar.restype = POINTER(c_ubyte)
+        dll_file_path = os.path.join(cur_path, dll_name)
 
-        self._alignment_dll_ .LoadFrame.argtypes = (POINTER(c_ubyte), POINTER(c_ubyte), c_int, c_int, c_int)
-        self._alignment_dll_ .LoadFrame.restype = POINTER(c_ubyte)
-        self._alignment_dll_ .ReleaseFrame.argtypes = (POINTER(c_ubyte),)
+        self._alignment_dll_ = ctypes.windll.LoadLibrary(dll_file_path)
+        self._alignment_dll_.get_mat_and_return_uchar.argtypes = (POINTER(c_ubyte), c_int, c_int, c_int)
+        self._alignment_dll_.get_mat_and_return_uchar.restype = POINTER(c_ubyte)
+
+        self._alignment_dll_.LoadFrame.argtypes = (POINTER(c_ubyte), POINTER(c_ubyte), c_int, c_int, c_int)
+        self._alignment_dll_.LoadFrame.restype = POINTER(c_ubyte)
+        self._alignment_dll_.ReleaseFrame.argtypes = (POINTER(c_ubyte),)
 
         return True
         # raise NotImplementedError

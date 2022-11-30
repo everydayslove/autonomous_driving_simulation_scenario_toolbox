@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os,sys
 from app.base.configs import sim_cfg
 from app.base.logger import log
 from app.base.plugins_manager import plugins_manager
@@ -61,6 +61,7 @@ class SimApp:
         self._plugins_manager_.run_one(data)
 
     def run(self):
+        sys.path.append(self._plugins_path_)
         self._plugins_manager_.load_plugins(self._plugins_path_)
         self._cv_Reader_.read()
 
