@@ -23,15 +23,10 @@ class Alignment(BasePlugin, ABC):
         self._output_ = None
 
     def init(self):
-        PROJECT_ROOT = path.dirname(path.dirname(path.dirname(path.dirname((path.dirname(__file__))))))
 
-        alignment_dll_path = path.join(PROJECT_ROOT, "tools", "alignment", "dll", "bin", "ShakeImage.dll")
-        cur_path = os.path.dirname(alignment_dll_path)
-        os.environ['path'] += ";" + cur_path
-        # os.chdir(r"F:\work\workSpace\minanqiang\imageregistration_new\image_registration\build\Debug")
-        # sys.path.append(r"F:\work\workSpace\minanqiang\imageregistration_new\image_registration\build\Debug")
-        self._alignment_dll_ = ctypes.windll.LoadLibrary(alignment_dll_path)
-        # self._alignment_dll_ = ctypes.windll.LoadLibrary("ShakeImage.dll")
+        cur_path = os.path.dirname(os.path.abspath(__file__))
+        dll_file_path = os.path.join(cur_path, "ShakeImage.dll")
+        self._alignment_dll_ = ctypes.windll.LoadLibrary(dll_file_path)
         self._alignment_dll_ .get_mat_and_return_uchar.argtypes = (POINTER(c_ubyte), c_int, c_int, c_int)
         self._alignment_dll_ .get_mat_and_return_uchar.restype = POINTER(c_ubyte)
 

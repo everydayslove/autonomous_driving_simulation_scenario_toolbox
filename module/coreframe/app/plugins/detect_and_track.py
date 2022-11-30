@@ -27,11 +27,11 @@ import sys
 # sys.path.insert(0, './yolov5_obb')
 # from app.env import PATH_APP_ROOT
 # sys.path.append(os.path.join(os.path.dirname(os.path.dirname(PATH_APP_ROOT)), 'tools'))
-sys.path.append(r'D:\project\autonomous_driving_simulation_scenario_toolbox')
+sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox')
 # sys.path.append(r'D:\project\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track\yolov5_obb')
-sys.path.append(r'D:\project\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin')
-sys.path.append(r'D:\project\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\yolov5_obb')
-sys.path.append(r'D:\project\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\deep_sort_pytorch')
+sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin')
+sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\yolov5_obb')
+sys.path.append(r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\deep_sort_pytorch')
 
 from yolov5_obb.utils.google_utils import attempt_download
 from yolov5_obb.models.experimental import attempt_load
@@ -95,8 +95,8 @@ class DetectAndTrack(BasePlugin):
         self.detector = DetectionWorker(detect_args)
 
         track_extractor_args = {}
-        track_extractor_args['config_deepsort'] = r'D:/project/autonomous_driving_simulation_scenario_toolbox/tools/detect_and_track_plugin/deep_sort_pytorch/configs/deep_sort.yaml'
-        track_extractor_args['deep_sort_weights'] = r'D:/project/autonomous_driving_simulation_scenario_toolbox/tools/detect_and_track_plugin/deep_sort_pytorch/deep_sort/deep/checkpoint/ckpt.t7'
+        track_extractor_args['config_deepsort'] = r'F:\work\workSpace\minanqiang\autonomous_driving_simulation_scenario_toolbox\tools\detect_and_track_plugin\deep_sort_pytorch\configs\deep_sort.yaml'
+        track_extractor_args['deep_sort_weights'] = r'F:\work\workSpace\minanqiang\uav_detection\uav-scenario-translation\deep_sort_pytorch\deep_sort\deep\checkpoint\ckpt.t7'
         track_extractor_args['device'] = device
         self.extractor = ExtractorWorker(track_extractor_args)
         self.tracker = TrackingWorker(track_extractor_args)

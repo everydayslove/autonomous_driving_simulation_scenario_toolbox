@@ -8,6 +8,21 @@
 #include<opencv2\imgproc\imgproc.hpp>
 #include<opencv2/features2d/features2d.hpp>
 #include<opencv2/opencv_modules.hpp>
+
+//#pragma comment(lib,"ade.lib")
+//#pragma comment(lib,"IlmImf.lib")
+//#pragma comment(lib,"ippicvmt.lib")
+//#pragma comment(lib,"ippiw.lib")
+//#pragma comment(lib,"libjasper.lib")
+//#pragma comment(lib,"libjpeg-turbo.lib")
+//#pragma comment(lib,"libpng.lib")
+//#pragma comment(lib,"libprotobuf.lib")
+//#pragma comment(lib,"libtiff.lib")
+//#pragma comment(lib,"libwebp.lib")
+//#pragma comment(lib,"zlib.lib")
+//#pragma comment(lib,"quirc.lib")
+//#pragma comment(lib,"opencv_world430.lib")
+
 using namespace cv;
 using namespace std;
 

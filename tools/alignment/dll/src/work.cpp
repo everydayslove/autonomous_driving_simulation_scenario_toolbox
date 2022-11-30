@@ -75,7 +75,7 @@ uchar *MatSO::get_mat_and_return_buffer(uchar *matrix, int rows, int cols, int c
 	memcpy(buffer, input_mat.data, height * width * 3);
 	return buffer;
 }
-int image_idx = 0;
+//int image_idx = 0;
 Mat calcHMat1(Mat image_1, Mat image_2, int nFeatures, float scaleFactor, int nLevels)
 {
 	string change_model = string("perspective");
