@@ -22,7 +22,7 @@ class PluginsManager:
             plugin = __import__("app.plugins." + plugin_name, fromlist=[plugin_name])
             class_name = plugin.get_class_name()
             plugin = class_name(index)
-            if plugin.init:
+            if plugin.init():
                 log.i("{} init successful\n".format(plugin))
             else:
                 log.e("{} init error\n".format(plugin))

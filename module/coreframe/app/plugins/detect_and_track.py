@@ -87,7 +87,6 @@ class DetectAndTrack(BasePlugin):
         self.width = None
         self.channels = None
 
-    @property
     def init(self):
         # default parameters, can save into sim.conf file
         cur_path = os.path.dirname(os.path.abspath(__file__))
